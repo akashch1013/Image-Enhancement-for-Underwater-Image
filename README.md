@@ -1,4 +1,7 @@
-# Underwater Image Enhancement — Deep Learning + Traditional Techniques
+# UIENetHybrid — Underwater Image Enhancement with Deep Learning + Traditional Techniques
+
+[![Docs](https://github.com/akashch1013/UIENetHybrid/actions/workflows/docs.yml/badge.svg)](https://github.com/akashch1013/UIENetHybrid/actions/workflows/docs.yml)
+**Documentation:** <https://akashch1013.github.io/UIENetHybrid/>
 
 A PyTorch implementation of
 
@@ -90,7 +93,8 @@ scripts/run_all.sh      single-machine experiment pipeline (time-budgeted, CPU f
 scripts/evaluate_all.sh evaluation, tables and figures for every run (used by both pipelines)
 modal_app.py            the same experiments as parallel Modal GPU jobs
 results/                metrics, tables, figures, samples, logs and the trained checkpoint
-report/                 CA4 result-analysis report (.docx) and the scripts that build it
+report/                 CA4 result-analysis report (.pdf / .docx) and the scripts that build it
+docs/, mkdocs.yml       documentation site (MkDocs Material), deployed by .github/workflows/docs.yml
 ```
 
 ---
@@ -248,7 +252,18 @@ Input → I1 (after Rnet / Gnet / Bnet) → I_CE (CLAHE) → I_GC (Gamma) → W_
 
 ---
 
-## 6. Citation
+## 6. Documentation
+
+The site at <https://akashch1013.github.io/UIENetHybrid/> covers the method, usage, results and API
+reference. It is built from `docs/` and deployed to GitHub Pages on every push to `master`. To
+preview it locally:
+
+```bash
+pip install -r docs/requirements.txt
+mkdocs serve
+```
+
+## 7. Citation
 
 ```bibtex
 @article{shi2022integrating,

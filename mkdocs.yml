@@ -1,0 +1,95 @@
+site_name: UIENetHybrid — Underwater Image Enhancement
+site_description: >-
+  PyTorch implementation of Shi et al. (IET Image Processing 2022): attention-guided colour
+  compensation + a multi-scale CNN fusing CLAHE and Gamma correction for underwater images.
+site_url: https://akashch1013.github.io/UIENetHybrid/
+repo_url: https://github.com/akashch1013/UIENetHybrid
+repo_name: akashch1013/UIENetHybrid
+edit_uri: edit/master/docs/
+copyright: Akash Chaudhari, Rifa Khan, Ayush Shinde — MGM University, JNEC (AI&DS)
+
+theme:
+  name: material
+  features:
+    - navigation.sections
+    - navigation.top
+    - navigation.footer
+    - content.code.copy
+    - content.action.edit
+    - search.highlight
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: blue
+      accent: teal
+      toggle: { icon: material/weather-night, name: Switch to dark mode }
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: blue
+      accent: teal
+      toggle: { icon: material/weather-sunny, name: Switch to light mode }
+  icon:
+    repo: fontawesome/brands/github
+
+# files under docs/ that are build helpers, not pages
+exclude_docs: |
+  hooks.py
+  requirements.txt
+  __pycache__/
+
+# copies results/figures and the report into docs/assets/generated/ before each build
+hooks:
+  - docs/hooks.py
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [.]
+          options:
+            show_source: false
+            show_root_heading: true
+            show_root_full_path: false
+            members_order: source
+            heading_level: 2
+            show_if_no_docstring: true
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - tables
+  - toc: { permalink: true }
+  - pymdownx.details
+  - pymdownx.arithmatex: { generic: true }
+  - pymdownx.highlight: { anchor_linenums: true }
+  - pymdownx.inlinehilite
+  - pymdownx.snippets:
+      base_path: [.]          # lets pages include results/tables/*.md from the repo root
+      check_paths: true
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+
+extra_javascript:
+  - javascripts/mathjax.js
+  - https://unpkg.com/mathjax@3.2.2/es5/tex-mml-chtml.js
+
+nav:
+  - Home: index.md
+  - Method: method.md
+  - Getting started: getting-started.md
+  - Training: training.md
+  - Evaluation & metrics: evaluation.md
+  - Results: results.md
+  - Reproduction notes: reproduction.md
+  - CA4 report: report.md
+  - API reference:
+      - Models: api/models.md
+      - Losses: api/losses.md
+      - Data: api/data.md
+      - Metrics: api/metrics.md
+      - Baselines: api/baselines.md
