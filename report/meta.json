@@ -1,0 +1,22 @@
+{
+  "students": "Akash Chaudhari",
+  "roll": "________",
+  "observations": [
+    "The paper's colour prior is reproduced. On UGAN, mean(GT) − mean(input) is R +45.3, G −22.1, B −20.7 (0–255 scale): red is attenuated and green over-strengthened. Real UIEB images show the same pattern, weaker (R +22.0, G −9.4, B −6.9).",
+    "After enhancement, the UGAN deviations shrink to R −4.6, G −7.8, B −2.2, close to zero, as in the paper's Fig. 11. The colour cast is largely removed.",
+    "On the synthetic UGAN test set the proposed method is the best of the six methods on PSNR-RGB (23.63 dB, +6.86 dB over the raw input), PSNR-Y (26.38 dB), SSIM (0.884) and UCIQE. The paper reports 25.67 dB / 0.891 after 50 epochs; ours trained for 30.7 epochs (25 min). SSIM is within 0.007 of the paper; PSNR is about 2 dB lower.",
+    "The paper's input PSNR (16.85 dB) matches our RGB PSNR of the raw input (16.77 dB), not the luminance PSNR (25.39 dB). The paper's PSNR values were therefore most likely computed on RGB.",
+    "On real UIEB images with references the network trained only on synthetic UGAN data does not beat the raw input on PSNR / SSIM (17.57 dB / 0.818 against 17.79 dB / 0.865). The channel analysis explains why: it learned the strong red loss of the synthetic data and over-compensates red on real images (R deviation −24.3 after enhancement). CLAHE is the best full-reference method on real images.",
+    "On UIEB-Challenging-60 the proposed method has the highest UCIQE (1.363) and the second-highest UIQM (2.308, after CLAHE). NIQE is worse than the input for the learned method. This metric was not designed for underwater scenes, and the paper reports values from a different implementation.",
+    "Ablation at an equal 4000 iterations: removing the contrast-enhancement module (Ce) costs 1.85 dB PSNR-RGB (23.52 → 21.67 dB), so the MSCNN + CLAHE + Gamma fusion is the most important component. Removing Rnet, Gnet or both changes PSNR by less than 0.1 dB, so the roughly 3 dB contribution of the colour modules reported in Table 4 of the paper is not reproduced. A likely reason is that the multi-scale convolutions in Ce also learn the colour correction.",
+    "Loss weights: with the Adam optimiser only the ratio λ2/λ1 matters, because scaling the whole loss does not change Adam's update. Pairs with the same ratio give almost the same PSNR-RGB: (1, 0.1) and (10, 1) both give 23.42 dB, and (0.1, 0.1), (1, 1) and (10, 10) give 23.24–23.33 dB. Only a very strong perceptual weight (λ2/λ1 = 100) hurts (21.90 dB). The paper's choice λ1 = 1, λ2 = 0.1 is among the best settings.",
+    "The learned confidence maps W_CE and W_GC are almost uniform (Figures 1–2), so the network blends the CLAHE and Gamma branches nearly equally and does most of its adaptation in the Z_CE / Z_GC refinement branches.",
+    "The model is light (317,697 parameters, 1.3 MB) and fast (about 9 ms per 256 × 256 image on an A10G GPU)."
+  ],
+  "conclusion": [
+    "We implemented the underwater enhancement method of Shi et al. (IET Image Processing 2022) in full: attention-guided red and green channel compensation, blue residual enhancement, and a multi-scale CNN that fuses CLAHE and Gamma correction. We trained it on the paper's UGAN dataset with the paper's optimiser, batch size, image size and loss weights.",
+    "On synthetic underwater images the method clearly beats the traditional enhancement algorithms (CLAHE, Gamma, gray-world, Ancuti red-channel compensation). It raises PSNR-RGB from 16.77 to 23.63 dB and SSIM from 0.854 to 0.884, and it removes the red/green colour bias that motivates the paper. Its SSIM is almost identical to the paper's (0.884 vs 0.891); its PSNR is about 2 dB lower after 30.7 instead of 50 training epochs.",
+    "Two of the paper's claims are only partly reproduced. First, the network trained on synthetic data does not generalise to real UIEB photographs in full-reference terms, because it over-compensates the red channel. Second, at equal training length, the contrast-enhancement module accounts for most of the gain, while the separate red / green compensation modules add little. The loss-weight study shows that only the ratio λ2/λ1 matters, which explains why the paper's choice λ1 = 1, λ2 = 0.1 works well.",
+    "Future work: training on a mix of synthetic and real data (e.g. the 800 UIEB training pairs) to close the domain gap, longer training to reach the paper's 50 epochs, and a colour-constancy prior so the red compensation adapts to the actual attenuation of each image."
+  ]
+}
