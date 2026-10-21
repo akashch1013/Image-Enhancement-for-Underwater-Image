@@ -5,3 +5,8 @@ runs/
 *.pt
 !results/checkpoints/*.pt
 .ipynb_checkpoints/
+
+# documentation build
+site/
+docs/assets/generated/
+report/node_modules/

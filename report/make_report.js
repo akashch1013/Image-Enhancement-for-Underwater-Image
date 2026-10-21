@@ -272,7 +272,7 @@ body.push(heading("References"));
   "K. Panetta, C. Gao, S. Agaian, “Human-visual-system-inspired underwater image quality measures,” IEEE JOE, 41(3), 2016 (UIQM).",
   "M. Yang, A. Sowmya, “An underwater color image quality evaluation metric,” IEEE TIP, 24(12), 2015 (UCIQE).",
   "S. Wang et al., “A patch-structure representation method for quality assessment of contrast changed images,” IEEE SPL, 22(12), 2015 (PCQI).",
-  "Code: https://github.com/akashch1013/Image-Enhancement-for-Underwater-Image",
+  "Code: https://github.com/akashch1013/UIENetHybrid",
 ].forEach((s) => body.push(numbered(s, "refs")));
 
 const doc = new Document({
