@@ -12,7 +12,7 @@ else
     # CPU fallback: 128x128 crops, and ablations train concurrently with the main run
     DEVICE=cpu
     : "${MAIN_MIN:=15}" "${ABL_ITERS:=200}" "${ABL_MIN:=7}" "${CROP:=128}"
-    : "${MAIN_THREADS:=10}" "${ABL_THREADS:=8}"
+    : "${MAIN_THREADS:=8}" "${ABL_THREADS:=7}"
 fi
 : "${BS:=8}" "${WORKERS:=4}" "${SWEEP_ITERS:=0}" "${EVAL_WORKERS:=16}"
 LOG=runs/logs

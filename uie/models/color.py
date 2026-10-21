@@ -28,12 +28,12 @@ class _AttentionCompensation(nn.Module):
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         feat = self.head(x)
-        feat = feat * self.cab(feat)
+        feat = self.fuse(feat * self.cab(feat)) * self.sab(x)
+        comp = self.tail(feat)
         if self.use_inverse:
             # (1 - Ir) keeps already-bright red pixels from being over-assigned (Ancuti et al. [22])
-            feat = feat * (1.0 - x)
-        feat = self.fuse(feat) * self.sab(x)
-        return self.tail(feat)
+            comp = comp * (1.0 - x)
+        return comp
 
 
 class RedCompensation(nn.Module):
