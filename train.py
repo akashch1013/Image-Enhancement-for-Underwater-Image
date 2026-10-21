@@ -39,7 +39,8 @@ def parse_args():
     p.add_argument("--no-rnet", action="store_true")
     p.add_argument("--no-gnet", action="store_true")
     p.add_argument("--no-ce", action="store_true")
-    p.add_argument("--no-amp", action="store_true")
+    p.add_argument("--amp", action="store_true",
+                   help="fp16 mixed precision (faster, but training was unstable with it on A10G/L40S)")
     p.add_argument("--crop", type=int, default=0, help="random square crop for training (0 = full 256x256)")
     p.add_argument("--threads", type=int, default=0, help="CPU threads (0 = from the cgroup CPU quota)")
     p.add_argument("--workers", type=int, default=8)
@@ -97,9 +98,10 @@ def main():
     args = parse_args()
     torch.manual_seed(args.seed)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    use_amp = device.type == "cuda" and not args.no_amp
+    use_amp = device.type == "cuda" and args.amp
     if device.type == "cuda":
         torch.backends.cudnn.benchmark = True
+        torch.backends.cuda.matmul.allow_tf32 = torch.backends.cudnn.allow_tf32 = True
     else:
         torch.set_num_threads(args.threads or cpu_quota())
     if args.smoke:

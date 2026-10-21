@@ -13,9 +13,10 @@ from kornia.enhance import equalize_clahe
 def clahe(x: torch.Tensor, clip_limit: float = 2.0, grid: int = 8) -> torch.Tensor:
     """Per-channel CLAHE of a Bx3xHxW image in [0,1].
 
-    Treated as fixed pre-processing (like OpenCV CLAHE), so no gradient flows through it.
+    Treated as fixed pre-processing (like OpenCV CLAHE), so no gradient flows through it. Histograms
+    and LUTs are always computed in fp32, also when the caller runs under mixed-precision autocast.
     """
-    with torch.no_grad():
+    with torch.no_grad(), torch.autocast(x.device.type, enabled=False):
         return equalize_clahe(x.detach().float().clamp(0, 1), clip_limit=clip_limit, grid_size=(grid, grid))
 
 
