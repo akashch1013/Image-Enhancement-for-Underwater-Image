@@ -1,0 +1,14 @@
+torch>=2.1
+torchvision>=0.16
+kornia>=0.7
+numpy
+opencv-python-headless
+scikit-image
+scipy
+pandas
+pyarrow
+matplotlib
+tqdm
+huggingface_hub
+# optional: NIQE metric (evaluate.py skips NIQE if missing)
+# pyiqa
