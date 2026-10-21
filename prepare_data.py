@@ -3,12 +3,15 @@
 Layout produced (all RGB PNG, resized to --size x --size):
     <out>/ugan/{train,test}/{input,target}/<name>.png   synthetic UGAN pairs (paper Sec. 4.1.1)
     <out>/uieb/{train,test}/{input,target}/<name>.png   real UIEB raw/reference pairs
+    <out>/uieb_c60/test/input/<name>.png                UIEB-Challenging-60 (no reference; needs --uieb-dir)
     <out>/README_data.json                              counts and sources
 
 Sources (Hugging Face Hub, fetched only with --download):
     UGAN (Fabbri et al. [37]): datasets/iamvastava/underwater_image_enhancement
         -> "underwater_imagenet (1).zip", trainA = distorted, trainB = clean, 6128 pairs
     UIEB (Li et al. [24]):     datasets/Hikari0608/UIEB -> parquet, columns raw/gt, 800 train + 90 val
+    or, with --uieb-dir, the official UIEB release laid out as raw/, reference/, challenging/ plus a
+    split_seed_42.json ({train, val, test, challenging} stem lists): train+val -> train, test -> test.
 """
 import argparse
 import glob
@@ -48,6 +51,8 @@ def _write_pair(job) -> str:
     """job = (name, input_bytes, target_bytes, out_split_dir)."""
     name, in_buf, gt_buf, out_dir = job
     for sub, buf in (("input", in_buf), ("target", gt_buf)):
+        if buf is None:  # no-reference split
+            continue
         cv2.imwrite(os.path.join(out_dir, sub, name + ".png"), _decode_resize(buf))
     return name
 
@@ -146,6 +151,27 @@ def build_uieb(args, pool) -> dict:
     return counts
 
 
+def build_uieb_folder(args, pool) -> dict:
+    """Official UIEB folders (raw/, reference/, challenging/) split by split_seed_42.json."""
+    root = args.uieb_dir
+    split = json.load(open(os.path.join(root, "split_seed_42.json")))
+    read = lambda sub, stem: open(os.path.join(root, sub, stem + ".png"), "rb").read()  # noqa: E731
+    plan = {("uieb", "train"): split["train"] + split.get("val", []), ("uieb", "test"): split["test"],
+            ("uieb_c60", "test"): split["challenging"]}
+    counts = {}
+    for (name, sp), stems in plan.items():
+        out_dir = os.path.join(args.out, name, sp)
+        os.makedirs(os.path.join(out_dir, "input"), exist_ok=True)
+        if name == "uieb":
+            os.makedirs(os.path.join(out_dir, "target"), exist_ok=True)
+            jobs = ((s, read("raw", s), read("reference", s), out_dir) for s in stems)
+        else:
+            jobs = ((s, read("challenging", s), None, out_dir) for s in stems)
+        counts[f"{name}/{sp}"] = sum(1 for _ in pool.imap_unordered(_write_pair, jobs, chunksize=8))
+        print(f"{name}/{sp}: {counts[f'{name}/{sp}']}", flush=True)
+    return counts
+
+
 def main():
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--raw", default="/workspace/raw", help="where the raw downloads live")
@@ -157,6 +183,7 @@ def main():
     p.add_argument("--workers", type=int, default=16)
     p.add_argument("--download", action="store_true", help="fetch the raw datasets from the HF Hub first")
     p.add_argument("--skip-uieb", action="store_true")
+    p.add_argument("--uieb-dir", default=None, help="official UIEB folders instead of the HF parquet")
     args = p.parse_args()
 
     if args.download:
@@ -166,7 +193,10 @@ def main():
             "sources": {"ugan": f"hf://datasets/{UGAN_REPO}", "uieb": f"hf://datasets/{UIEB_REPO}"}}
     with Pool(args.workers, initializer=_init_worker, initargs=(args.size,)) as pool:
         info["ugan"] = build_ugan(args, pool)
-        if not args.skip_uieb:
+        if args.uieb_dir:
+            info["uieb"] = build_uieb_folder(args, pool)
+            info["sources"]["uieb"] = "official UIEB release (raw / reference / challenging)"
+        elif not args.skip_uieb:
             info["uieb"] = build_uieb(args, pool)
     with open(os.path.join(args.out, "README_data.json"), "w") as f:
         json.dump(info, f, indent=2)

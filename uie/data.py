@@ -29,10 +29,15 @@ def list_images(folder: str) -> list:
 
 
 def list_pairs(root: str, split: str) -> list:
-    """Return [(name, input_path, target_path)] for files present in both input/ and target/."""
+    """Return [(name, input_path, target_path)] for files present in both input/ and target/.
+
+    A split without a target/ folder (e.g. UIEB-Challenging-60) yields target_path = None.
+    """
     in_dir = os.path.join(root, split, "input")
     gt_dir = os.path.join(root, split, "target")
-    targets = {os.path.splitext(f)[0]: f for f in list_images(gt_dir)} if os.path.isdir(gt_dir) else {}
+    if not os.path.isdir(gt_dir):
+        return [(os.path.splitext(f)[0], os.path.join(in_dir, f), None) for f in list_images(in_dir)]
+    targets = {os.path.splitext(f)[0]: f for f in list_images(gt_dir)}
     pairs = []
     for f in list_images(in_dir):
         stem = os.path.splitext(f)[0]
