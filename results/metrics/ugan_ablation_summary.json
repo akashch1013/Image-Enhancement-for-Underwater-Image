@@ -1,0 +1,47 @@
+{
+  "w_ce": {
+    "psnr": 26.8182,
+    "psnr_rgb": 23.522,
+    "ssim": 0.8796,
+    "uiqm": 3.039,
+    "uciqe": 2.043,
+    "ms_per_img": 8.9796,
+    "n": 100
+  },
+  "wo_gnet": {
+    "psnr": 26.7298,
+    "psnr_rgb": 23.5966,
+    "ssim": 0.8771,
+    "uiqm": 3.0772,
+    "uciqe": 1.7686,
+    "ms_per_img": 9.0878,
+    "n": 100
+  },
+  "wo_rnet": {
+    "psnr": 26.5545,
+    "psnr_rgb": 23.4681,
+    "ssim": 0.877,
+    "uiqm": 3.0796,
+    "uciqe": 1.8075,
+    "ms_per_img": 8.5156,
+    "n": 100
+  },
+  "wo_rnet_gnet": {
+    "psnr": 26.6576,
+    "psnr_rgb": 23.5589,
+    "ssim": 0.8784,
+    "uiqm": 3.0743,
+    "uciqe": 1.5706,
+    "ms_per_img": 7.99,
+    "n": 100
+  },
+  "w_rnet_gnet": {
+    "psnr": 26.3075,
+    "psnr_rgb": 21.6696,
+    "ssim": 0.872,
+    "uiqm": 2.771,
+    "uciqe": 1.7756,
+    "ms_per_img": 2.7062,
+    "n": 100
+  }
+}

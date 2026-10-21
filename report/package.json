@@ -1,0 +1,6 @@
+{
+  "name": "ca4-report",
+  "private": true,
+  "description": "Builds CA4_Result_Analysis_Report.docx from results/: node make_report.js .. CA4_Result_Analysis_Report.docx",
+  "dependencies": { "docx": "^9.0.0" }
+}
