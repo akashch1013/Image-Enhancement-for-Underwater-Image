@@ -4,14 +4,17 @@ const fs = require("fs");
 const path = require("path");
 const {
   Document, Packer, Paragraph, TextRun, ImageRun, Table, TableRow, TableCell, AlignmentType,
-  WidthType, ShadingType, BorderStyle, LevelFormat, PageBreak, Footer, PageNumber,
+  WidthType, ShadingType, BorderStyle, LevelFormat, PageBreak, Footer, PageNumber, TabStopType,
 } = require("docx");
 
 const REPO = process.argv[2];
 const OUT = process.argv[3];
 const R = (...p) => path.join(REPO, "results", ...p);
 const FONT = "Times New Roman";
-const CONTENT_W = 11906 - 1440 - 707; // A4 width minus the format's left/right margins (DXA)
+// The format's margins are 1440 (left) / 707 (right); we split the same total evenly so the page is
+// centred, which keeps the text width (and every table and figure size) unchanged.
+const MARGIN_LR = 1074;
+const CONTENT_W = 11906 - 2 * MARGIN_LR; // A4 width minus left/right margins (DXA)
 const MAX_IMG_PX = 640;
 
 // ---------- helpers -------------------------------------------------------------------------
@@ -35,7 +38,7 @@ function pngSize(file) {
   const b = fs.readFileSync(file);
   return { w: b.readUInt32BE(16), h: b.readUInt32BE(20) };
 }
-const JPG_DIR = path.join(__dirname, "jpg"); // JPEG copies of the large figure grids keep the .docx small
+const JPG_DIR = process.env.REPORT_JPG_DIR || path.join(__dirname, "jpg"); // JPEG copies of the large figure grids keep the .docx small
 function image(rel, cap, maxW = MAX_IMG_PX) {
   const file = R("figures", rel);
   if (!fs.existsSync(file)) return [text(`[figure not available: ${rel}]`, { italics: true })];
@@ -115,8 +118,11 @@ body.push(new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 0 }
 body.push(blank());
 body.push(labelled("Department Name: ", "AI&DS"));
 body.push(labelled("CA4: ", "Integrating Deep Learning and Traditional Image Enhancement Techniques for Underwater Image Enhancement (Z. Shi, Y. Wang, Z. Zhou, W. Ren, IET Image Processing, vol. 16, pp. 3471–3484, 2022, doi:10.1049/ipr2.12544)"));
-body.push(para([run("Name of students in a group: ", { bold: true }), run(meta.students || "Akash Chaudhari"),
-  run("          Roll No: ", { bold: true }), run(meta.roll || "________")]));
+// one line per student, roll numbers aligned on a tab stop
+body.push(para([run("Name of students in a group:", { bold: true })], { after: 40, align: AlignmentType.LEFT }));
+(meta.students || []).forEach((st) => body.push(new Paragraph({ spacing: { after: 40 }, indent: { left: 360 },
+  tabStops: [{ type: TabStopType.LEFT, position: 4300 }],
+  children: [run(`${st.name}`), run("\tRoll No: ", { bold: true }), run(st.roll)] })));
 body.push(blank());
 
 // Introduction
@@ -279,7 +285,7 @@ const doc = new Document({
   ] },
   sections: [{
     properties: { page: { size: { width: 11906, height: 16838 },
-      margin: { top: 523, right: 707, bottom: 730, left: 1440, header: 0, footer: 300 } } },
+      margin: { top: 523, right: MARGIN_LR, bottom: 730, left: MARGIN_LR, header: 0, footer: 300 } } },
     footers: { default: new Footer({ children: [new Paragraph({ alignment: AlignmentType.CENTER,
       children: [new TextRun({ children: [PageNumber.CURRENT], font: FONT, size: 18 })] })] }) },
     children: body,

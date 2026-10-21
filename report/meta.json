@@ -1,6 +1,18 @@
 {
-  "students": "Akash Chaudhari",
-  "roll": "________",
+  "students": [
+    {
+      "name": "Akash Chaudhari",
+      "roll": "202301128055"
+    },
+    {
+      "name": "Rifa Khan",
+      "roll": "202301128059"
+    },
+    {
+      "name": "Ayush Shinde",
+      "roll": "202301128023"
+    }
+  ],
   "observations": [
     "The paper's colour prior is reproduced. On UGAN, mean(GT) − mean(input) is R +45.3, G −22.1, B −20.7 (0–255 scale): red is attenuated and green over-strengthened. Real UIEB images show the same pattern, weaker (R +22.0, G −9.4, B −6.9).",
     "After enhancement, the UGAN deviations shrink to R −4.6, G −7.8, B −2.2, close to zero, as in the paper's Fig. 11. The colour cast is largely removed.",
