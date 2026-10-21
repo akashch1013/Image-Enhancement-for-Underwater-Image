@@ -11,7 +11,10 @@ const REPO = process.argv[2];
 const OUT = process.argv[3];
 const R = (...p) => path.join(REPO, "results", ...p);
 const FONT = "Times New Roman";
-const CONTENT_W = 11906 - 1440 - 707; // A4 width minus the format's left/right margins (DXA)
+// The format's margins are 1440 (left) / 707 (right); we split the same total evenly so the page is
+// centred, which keeps the text width (and every table and figure size) unchanged.
+const MARGIN_LR = 1074;
+const CONTENT_W = 11906 - 2 * MARGIN_LR; // A4 width minus left/right margins (DXA)
 const MAX_IMG_PX = 640;
 
 // ---------- helpers -------------------------------------------------------------------------
@@ -282,7 +285,7 @@ const doc = new Document({
   ] },
   sections: [{
     properties: { page: { size: { width: 11906, height: 16838 },
-      margin: { top: 523, right: 707, bottom: 730, left: 1440, header: 0, footer: 300 } } },
+      margin: { top: 523, right: MARGIN_LR, bottom: 730, left: MARGIN_LR, header: 0, footer: 300 } } },
     footers: { default: new Footer({ children: [new Paragraph({ alignment: AlignmentType.CENTER,
       children: [new TextRun({ children: [PageNumber.CURRENT], font: FONT, size: 18 })] })] }) },
     children: body,
