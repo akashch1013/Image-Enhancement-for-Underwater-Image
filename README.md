@@ -6,7 +6,7 @@ A PyTorch implementation of
 
 The network corrects colour **per channel** (red is boosted, green is reduced, blue is refined) using attention-guided residual modules. It then improves contrast and sharpness with a multi-scale CNN that fuses **CLAHE** and **Gamma correction** results using learned confidence maps.
 
-> **Headline (UGAN test-100, the paper's main benchmark):** PSNR-RGB **16.77 → 23.63 dB** and SSIM **0.854 → 0.884**. The paper reports 25.67 dB / 0.891. Ours trained for 30.7 epochs (25 min on one L40S) instead of 50. The red/green colour bias of Fig. 1 is removed (Fig. 11 reproduced). The full report is [`report/CA4_Result_Analysis_Report.docx`](report/CA4_Result_Analysis_Report.docx).
+> **Headline (UGAN test-100, the paper's main benchmark):** PSNR-RGB **16.77 → 23.63 dB** and SSIM **0.854 → 0.884**. The paper reports 25.67 dB / 0.891. Ours trained for 30.7 epochs (25 min on one L40S) instead of 50. The red/green colour bias of Fig. 1 is removed (Fig. 11 reproduced). The full report is [`report/CA4_Result_Analysis_Report.pdf`](report/CA4_Result_Analysis_Report.pdf) ([.docx](report/CA4_Result_Analysis_Report.docx)).
 
 ---
 
